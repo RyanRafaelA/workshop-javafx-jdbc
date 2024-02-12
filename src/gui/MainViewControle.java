@@ -34,7 +34,7 @@ public class MainViewControle implements Initializable {
 
 	@FXML
 	public void sobreMenuItemDepartamentoAcao() {
-		System.out.println("sobreMenuItemDepartamentoAcao");
+		carregarVisualizacao("/gui/ListaDepartamento.fxml");
 	}
 
 	@FXML
