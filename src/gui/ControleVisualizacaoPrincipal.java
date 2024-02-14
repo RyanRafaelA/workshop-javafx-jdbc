@@ -3,6 +3,7 @@ package gui;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.function.Consumer;
 
 import application.Main;
 import gui.util.Alertas;
@@ -35,12 +36,15 @@ public class ControleVisualizacaoPrincipal implements Initializable {
 
 	@FXML
 	public void sobreMenuItemDepartamentoAcao() {
-		carregarVisualizacao2("/gui/ListaDepartamento.fxml");
+		carregarVisualizacao("/gui/ListaDepartamento.fxml", (ControleListaDepartamento controle) -> {
+			controle.setDepartamentoServico(new DepartamentoServico());
+			controle.atualizarTabelaVisualizacao();
+		});
 	}
 
 	@FXML
 	public void sobreMenuItemSobreAcao() {
-		carregarVisualizacao("/gui/Sobre.fxml");
+		carregarVisualizacao("/gui/Sobre.fxml", x -> {});
 	}
 
 	@Override
@@ -48,7 +52,7 @@ public class ControleVisualizacaoPrincipal implements Initializable {
 
 	}
 
-	private synchronized void carregarVisualizacao(String nomeAbsoluto) {
+	private synchronized <T> void carregarVisualizacao(String nomeAbsoluto, Consumer<T> acaoInicializacao) {
 		try {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource(nomeAbsoluto));
 			VBox novoVBox = loader.load();
@@ -61,30 +65,8 @@ public class ControleVisualizacaoPrincipal implements Initializable {
 			principalVBox.getChildren().add(menuPrincipal);
 			principalVBox.getChildren().addAll(novoVBox.getChildren());
 			
-			
-		} catch (IOException e) {
-			Alertas.showAlert("IO Exception", "Erro ao carregar visualização", e.getMessage(), AlertType.ERROR);
-		}
-	}
-	
-	private synchronized void carregarVisualizacao2(String nomeAbsoluto) {
-		try {
-			FXMLLoader loader = new FXMLLoader(getClass().getResource(nomeAbsoluto));
-			VBox novoVBox = loader.load();
-			
-			Scene cenaPrincipal = Main.getCenaPrincipal();
-			VBox principalVBox = (VBox) ((ScrollPane) cenaPrincipal.getRoot()).getContent();
-			
-			Node menuPrincipal = principalVBox.getChildren().get(0);
-			principalVBox.getChildren().clear();
-			principalVBox.getChildren().add(menuPrincipal);
-			principalVBox.getChildren().addAll(novoVBox.getChildren());
-			
-			
-			ControleListaDepartamento controle = loader.getController();
-			controle.setDepartamentoServico(new DepartamentoServico());
-			controle.atualizarTabelaVisualizacao();
-			
+			T controle = loader.getController();
+			acaoInicializacao.accept(controle);
 		} catch (IOException e) {
 			Alertas.showAlert("IO Exception", "Erro ao carregar visualização", e.getMessage(), AlertType.ERROR);
 		}
