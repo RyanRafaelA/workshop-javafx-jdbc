@@ -15,6 +15,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.VBox;
+import modelo.servico.DepartamentoServico;
 
 public class ControleVisualizacaoPrincipal implements Initializable {
 
@@ -34,7 +35,7 @@ public class ControleVisualizacaoPrincipal implements Initializable {
 
 	@FXML
 	public void sobreMenuItemDepartamentoAcao() {
-		carregarVisualizacao("/gui/ListaDepartamento.fxml");
+		carregarVisualizacao2("/gui/ListaDepartamento.fxml");
 	}
 
 	@FXML
@@ -60,6 +61,29 @@ public class ControleVisualizacaoPrincipal implements Initializable {
 			principalVBox.getChildren().add(menuPrincipal);
 			principalVBox.getChildren().addAll(novoVBox.getChildren());
 			
+			
+		} catch (IOException e) {
+			Alertas.showAlert("IO Exception", "Erro ao carregar visualização", e.getMessage(), AlertType.ERROR);
+		}
+	}
+	
+	private synchronized void carregarVisualizacao2(String nomeAbsoluto) {
+		try {
+			FXMLLoader loader = new FXMLLoader(getClass().getResource(nomeAbsoluto));
+			VBox novoVBox = loader.load();
+			
+			Scene cenaPrincipal = Main.getCenaPrincipal();
+			VBox principalVBox = (VBox) ((ScrollPane) cenaPrincipal.getRoot()).getContent();
+			
+			Node menuPrincipal = principalVBox.getChildren().get(0);
+			principalVBox.getChildren().clear();
+			principalVBox.getChildren().add(menuPrincipal);
+			principalVBox.getChildren().addAll(novoVBox.getChildren());
+			
+			
+			ControleListaDepartamento controle = loader.getController();
+			controle.setDepartamentoServico(new DepartamentoServico());
+			controle.atualizarTabelaVisualizacao();
 			
 		} catch (IOException e) {
 			Alertas.showAlert("IO Exception", "Erro ao carregar visualização", e.getMessage(), AlertType.ERROR);
