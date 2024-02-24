@@ -50,7 +50,7 @@ public class ControleVisualizacaoPrincipal implements Initializable {
 	@Override
 	public void initialize(URL uri, ResourceBundle rb) {
 
-	}
+	} 
 
 	private synchronized <T> void carregarVisualizacao(String nomeAbsoluto, Consumer<T> acaoInicializacao) {
 		try {
